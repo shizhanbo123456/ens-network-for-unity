@@ -1,19 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
-internal class EnsRoom:Disposable
+public class EnsRoom:Disposable
 {
+    public static EnsRoom Instance
+    {
+        get
+        {
+            if(EnsRoomManager.Instance == null)return null;
+            if(EnsRoomManager.Instance.rooms.TryGetValue(1000,out var room))return room;
+            return null;
+        }
+    }
     private Dictionary<int,EnsConnection> ClientConnections =new Dictionary<int, EnsConnection>();
-    internal int RoomId;
+    public int RoomId;
     internal int CurrentAuthorityAt = -1;
 
     public Dictionary<string, (char, int)> Rule = new Dictionary<string, (char, int)>();
+    public Dictionary<string,string>Info= new Dictionary<string, string>();
 
     // >0为游戏过程中制造的物体的Id
     private int createdid = 1;
-    public int CreatedId
+    internal int CreatedId
     {
         get
         {

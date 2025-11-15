@@ -117,8 +117,8 @@ public class EnsCorrespondent :MonoBehaviour
         EnsHost.Create(out var host, out var client);
         Server = new EnsServer(Port);
         Server.ClientConnections.Add(host.ClientId,host);
-
-        EnsInstance.OnServerConnect.Invoke(host.ClientId);
+        EnsInstance.LocalClientId = host.ClientId;
+        EnsInstance.OnServerConnect.Invoke();
     }
     public void StartServer()
     {
@@ -175,11 +175,6 @@ public class EnsCorrespondent :MonoBehaviour
     {
         try
         {
-            if (EnsInstance.ClientConnectRejected)
-            {
-                EnsInstance.OnConnectionRejected?.Invoke();
-                EnsInstance.ClientConnectRejected = false;
-            }
             if (networkMode == NetworkMode.Server)
             {
                 if (Server != null)
@@ -213,9 +208,14 @@ public class EnsCorrespondent :MonoBehaviour
             Debug.Log(e);
         }
         networkMode = NetworkMode.None;
+        if (EnsInstance.ClientConnectRejected)
+        {
+            EnsInstance.OnConnectionRejected?.Invoke();
+            EnsInstance.ClientConnectRejected = false;
+        }
         if (!EnsInstance.RoomExitInvoke)
         {
-            EnsInstance.OnExit.Invoke();
+            EnsInstance.OnExitRoom.Invoke();
         }
         if (!EnsInstance.ServerDisconnectInvoke)
         {

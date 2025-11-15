@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using request = Ens.Request;
-internal class EnsEventRegister
+public class EnsEventRegister
 {
     private static EnsCorrespondent Corr
     {
@@ -57,6 +57,8 @@ internal class EnsEventRegister
         EnsServerRequest.RegistRequest(new request.Server.GetRule());
         EnsServerRequest.RegistRequest(new request.Server.ExitRoom());
         EnsServerRequest.RegistRequest(new request.Server.GetRoomList());
+        EnsServerRequest.RegistRequest(new request.Server.SetInfo());
+        EnsServerRequest.RegistRequest(new request.Server.GetInfo());
     }
     private static void RegistClientRequests()
     {
@@ -66,6 +68,8 @@ internal class EnsEventRegister
         EnsClientRequest.RegistRequest(new request.Client.GetRule());
         EnsClientRequest.RegistRequest(new request.Client.ExitRoom());
         EnsClientRequest.RegistRequest(new request.Client.GetRoomList());
+        EnsClientRequest.RegistRequest(new request.Client.SetInfo());
+        EnsClientRequest.RegistRequest(new request.Client.GetInfo());
     }
     protected static void Server_Any()
     {
@@ -93,7 +97,7 @@ internal class EnsEventRegister
             {
                 var i = int.Parse(data.Substring(3, data.Length - 3));
                 EnsInstance.LocalClientId = i;
-                EnsInstance.OnServerConnect.Invoke(i);
+                EnsInstance.OnServerConnect.Invoke();
             }
         };
     }
@@ -359,7 +363,7 @@ internal class EnsEventRegister
 
     protected static void ForceInvokeOnce_Server()
     {
-        EnsInstance.OnServerConnect += _ =>
+        EnsInstance.OnServerConnect += () =>
         {
             EnsInstance.ServerDisconnectInvoke = false;
         };
@@ -378,7 +382,7 @@ internal class EnsEventRegister
         {
             EnsInstance.RoomExitInvoke = false;
         };
-        EnsInstance.OnExit += () =>
+        EnsInstance.OnExitRoom += () =>
         {
             EnsInstance.RoomExitInvoke = true;
         };
@@ -398,16 +402,16 @@ internal class EnsEventRegister
     }
 
 
-    internal static void LoopCommon()
+    public static void LoopCommon()
     {
         Utils.Time.Update();
     }
-    internal static void LoopClient()
+    public static void LoopClient()
     {
         Broadcast.Update();
         EnsClientRequest.Update();
     }
-    internal static void LoopServer()
+    public static void LoopServer()
     {
 
     }

@@ -16,6 +16,7 @@ namespace ProtocolWrapper
 
     public static class Broadcast
     {
+        public static int Port = 9900;
         public static float broadcastInterval = 1f;
         public static float CleanupExpiredMessagesInterval = 0.5f;
         public static float messageTimeout = 5f;
@@ -33,7 +34,7 @@ namespace ProtocolWrapper
         public static bool Sending => senderClient != null;
         public static bool Receiving=>receiverClient != null;
 
-        public static bool StartBroadcast(int port)
+        public static bool StartBroadcast()
         {
             if (senderClient != null)
             {
@@ -43,7 +44,7 @@ namespace ProtocolWrapper
             {
                 senderClient = new UdpClient();
                 senderClient.EnableBroadcast = true;
-                broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, port);
+                broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, Port);
                 return true;
             }
             catch
@@ -102,7 +103,7 @@ namespace ProtocolWrapper
             BroadcastContent.Clear();
         }
 
-        public static bool StartRecv(int port)
+        public static bool StartRecv()
         {
             if (receiverClient != null)
             {
@@ -111,7 +112,7 @@ namespace ProtocolWrapper
             }
             try
             {
-                receiverClient = new UdpClient(port);
+                receiverClient = new UdpClient(Port);
                 receiverClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 return true;
             }

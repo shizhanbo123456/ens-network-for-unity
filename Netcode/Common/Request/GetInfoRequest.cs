@@ -5,16 +5,16 @@ namespace Ens.Request
 {
     namespace Client
     {
-        public class GetRule : RequestClient
+        public class GetInfo : RequestClient
         {
-            protected internal override string Header => "R3";
+            protected internal override string Header => "R7";
 
             public static Action<Dictionary<int,string>> OnRecvReply;
             public static Action OnTimeOut;
             public static Action RoomNotFoundError;
 
-            private static GetRule Instance;
-            internal GetRule() : base()
+            private static GetInfo Instance;
+            internal GetInfo() : base()
             {
                 Instance = this;
             }
@@ -28,8 +28,7 @@ namespace Ens.Request
             }
             protected override void HandleReply(string data)
             {
-                var d=Format.StringToDictionary(data, int.Parse,t=>t);
-                OnRecvReply?.Invoke(d);
+                OnRecvReply?.Invoke(Format.StringToDictionary(data,int.Parse,s=>s));
             }
             protected internal override void TimeOut()
             {
@@ -39,18 +38,18 @@ namespace Ens.Request
     }
     namespace Server
     {
-        internal class GetRule : RequestServer
+        internal class GetInfo : RequestServer
         {
-            protected internal override string Header => "R3";
+            protected internal override string Header => "R7";
             protected internal override string HandleRequest(EnsConnection conn, string data)
             {
-                List<int> ids = Format.StringToList(data,int.Parse);
-                Dictionary<int,string>r=new Dictionary<int,string>();
-                foreach(var i in ids)
+                List<int> ids = Format.StringToList(data, int.Parse);
+                Dictionary<int, string> r = new Dictionary<int, string>();
+                foreach (var i in ids)
                 {
                     if (EnsRoomManager.Instance.rooms.TryGetValue(int.Parse(data), out var room))
                     {
-                        r.Add(i, Format.DictionaryToString(room.Rule, valueconverter: t =>t.Item1.ToString()+t.Item2));
+                        r.Add(i, Format.DictionaryToString(room.Info));
                     }
                 }
                 return Format.DictionaryToString(r);

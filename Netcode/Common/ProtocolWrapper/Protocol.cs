@@ -13,7 +13,7 @@ namespace ProtocolWrapper
     {
         TCP, UDP
     }
-    internal class Protocol
+    public class Protocol
     {
         internal static int BufferLength = 400;
 
@@ -25,13 +25,9 @@ namespace ProtocolWrapper
         internal static int id = 0;
 
         internal static Action<ProtocolBase, int> OnRecvConnection;
-        internal static Action OnClientInitialized;//只会在客户端调用
 
-        internal static Func<string, bool> ClientRecvImmediateInvoke;
-        internal static Func<string, bool> ConnectionRecvImmediateInvoke;
-
-        internal static ConcurrentType mode=ConcurrentType.Multithreading;
-        internal static ProtocolType type;
+        public static ConcurrentType mode=ConcurrentType.Multithreading;
+        public static ProtocolType type;
 
 
         /// <summary>

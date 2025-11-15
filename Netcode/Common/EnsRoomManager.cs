@@ -1,18 +1,15 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-internal class EnsRoomManager:Disposable
+
+public class EnsRoomManager:Disposable
 {
-    internal static EnsRoomManager Instance;
-    internal SortedDictionary<int,EnsRoom> rooms = new SortedDictionary<int, EnsRoom>();
-    private int RoomId = 10000;
+    public static EnsRoomManager Instance;
+    public SortedDictionary<int,EnsRoom> rooms = new SortedDictionary<int, EnsRoom>();
+    private int RoomId;
 
 
-    internal EnsRoomManager()
+    internal EnsRoomManager(bool forceOneRoom=false)
     {
-        Instance = this;
+        RoomId = forceOneRoom ? 1000 : 10000;
     }
 
     internal bool CreateRoom(EnsConnection conn,out int code)
@@ -25,7 +22,6 @@ internal class EnsRoomManager:Disposable
         rooms.Add(RoomId,new EnsRoom(RoomId));
         rooms[RoomId].Join(conn);
         RoomId += 1;
-        if (EnsProgram.Instance.RoomDebug) Debug.Log("创建了房间 " + (RoomId - 1).ToString());
         code= conn.room.RoomId;
         return true;
     }
@@ -54,7 +50,6 @@ internal class EnsRoomManager:Disposable
             id= 0;
             return false;
         }
-        if (EnsProgram.Instance.RoomDebug) Debug.Log("离开了房间 " + conn.room.RoomId);
         conn.room.Exit(conn);
         id = 0;
         return true;

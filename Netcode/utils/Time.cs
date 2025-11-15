@@ -2,7 +2,7 @@
 
 namespace Utils
 {
-    internal class Time
+    public class Time
     {
         private static DateTime Now;
         private static DateTime LastFrame;

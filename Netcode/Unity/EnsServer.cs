@@ -13,9 +13,10 @@ public class EnsServer : ServerBase
     {
         Instance= this;
         Listener = Protocol.GetListener(IPAddress.Any, port);
+        RoomManager = new EnsRoomManager(true);
         On = true;
 
-        Protocol.OnRecvConnection += (conn, index) => OnRecvConnection(conn, index);
+        Protocol.OnRecvConnection = (conn, index) => OnRecvConnection(conn, index);
     }
 
 

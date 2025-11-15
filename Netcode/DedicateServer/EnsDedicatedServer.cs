@@ -1,7 +1,4 @@
 using ProtocolWrapper;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 
@@ -9,14 +6,13 @@ public class EnsDedicatedServer:ServerBase
 {
     public EnsDedicatedServer(IPAddress ip,int port)
     {
-        Listener = Protocol.GetListener(ip, port);
-        On = true;
-
         EnsEventRegister.RegistDedicateServer();
 
+        Listener = Protocol.GetListener(ip, port);
         RoomManager = new EnsRoomManager();
+        On = true;
 
-        Protocol.OnRecvConnection += (conn, index) => OnRecvConnection(conn, index);
+        Protocol.OnRecvConnection = (conn, index) => OnRecvConnection(conn, index);
     }
 
 

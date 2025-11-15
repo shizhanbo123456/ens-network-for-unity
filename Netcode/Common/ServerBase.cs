@@ -27,7 +27,7 @@ public class ServerBase : Disposable
     {
         if (Listener.Listening) Listener.EndListening();
     }
-    internal virtual void Update()
+    public virtual void Update()
     {
         for (int index = ClientConnections.Count - 1; index >= 0; index--)
         {
