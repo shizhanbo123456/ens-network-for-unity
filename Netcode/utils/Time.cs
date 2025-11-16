@@ -4,7 +4,7 @@ namespace Utils
 {
     public class Time
     {
-        private static DateTime Now;
+        private static DateTime TimeStart;
         private static DateTime LastFrame;
         private static float m_deltaTime;
 
@@ -13,7 +13,7 @@ namespace Utils
         {
             get
             {
-                return (float)DateTime.Now.Subtract(Now).TotalSeconds;
+                return (float)DateTime.Now.Subtract(TimeStart).TotalSeconds;
             }
         }
         public static float deltaTime
@@ -27,7 +27,7 @@ namespace Utils
 
         public static void Init()
         {
-            Now = DateTime.Now;
+            TimeStart = DateTime.Now;
             LastFrame = DateTime.Now;
         }
         public static void Update()

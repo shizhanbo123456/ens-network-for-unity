@@ -11,7 +11,7 @@ public static class EnsClientRequest
 
     public static void RegistRequest(RequestClient request)
     {
-        string key = request.GetType().ToString();
+        string key = request.Header;
         if (Requests.ContainsKey(key))
         {
             Debug.LogError("ÖØ¸´×¢²áÊÂ¼þ");
@@ -23,10 +23,10 @@ public static class EnsClientRequest
     }
     internal static bool SendRequest(string header,string content,bool keyValue=true)
     {
-        if (!ActiveRequestHeader.ContainsKey(header)) return false;
+        if (ActiveRequestHeader.ContainsKey(header)) return false;
         if (EnsInstance.Corr == null) return false;
         if (EnsInstance.Corr.Client == null) return false;
-        EnsInstance.Corr.Client.SendData(keyValue ? Header.kQ : Header.Q + "{" + header + "}#{" + content + "}");
+        EnsInstance.Corr.Client.SendData((keyValue ? Header.kQ : Header.Q) + "{" + header + "}#{" + content + "}");
         ActiveRequestHeader.Add(header, Time.time + EnsInstance.KeyExistTime + 1);
         return true;
     }

@@ -24,7 +24,7 @@ namespace ProtocolWrapper
         private static ReachTime reachTime = new ReachTime(-1, ReachTime.InitTimeFlagType.ReachAt);
         private static ReachTime CleanExpiredTime= new ReachTime(-1, ReachTime.InitTimeFlagType.ReachAt);
         private static Dictionary<string, string> BroadcastContent = new Dictionary<string, string>();
-        // 改为存储多个消息体及其接收时间
+
         private static Dictionary<string, List<ReceivedMessage>> ReceiveContent = new Dictionary<string, List<ReceivedMessage>>();
 
         private static UdpClient senderClient;

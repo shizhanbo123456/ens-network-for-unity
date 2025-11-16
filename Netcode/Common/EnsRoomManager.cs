@@ -10,6 +10,7 @@ public class EnsRoomManager:Disposable
     internal EnsRoomManager(bool forceOneRoom=false)
     {
         RoomId = forceOneRoom ? 1000 : 10000;
+        Instance = this;
     }
 
     internal bool CreateRoom(EnsConnection conn,out int code)

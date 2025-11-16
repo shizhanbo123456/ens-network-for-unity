@@ -67,6 +67,9 @@ public class EnsCorrespondent :MonoBehaviour
         ProtocolWrapper.Protocol.DevelopmentDebug = DevelopmentDebug;
 
         EnsEventRegister.RegistUnity();
+
+        EnsEventRegister.InitClient();
+        EnsEventRegister.InitCommon();
     }
     protected void UpdateServerAndClient()//Clear send buffer and handle recv buffer
     {
@@ -117,7 +120,6 @@ public class EnsCorrespondent :MonoBehaviour
         EnsHost.Create(out var host, out var client);
         Server = new EnsServer(Port);
         Server.ClientConnections.Add(host.ClientId,host);
-        EnsInstance.LocalClientId = host.ClientId;
         EnsInstance.OnServerConnect.Invoke();
     }
     public void StartServer()
@@ -219,6 +221,7 @@ public class EnsCorrespondent :MonoBehaviour
         }
         if (!EnsInstance.ServerDisconnectInvoke)
         {
+            EnsInstance.LocalClientId = -1;
             EnsInstance.OnServerDisconnect?.Invoke();
         }
         EnsInstance.HasAuthority = false;

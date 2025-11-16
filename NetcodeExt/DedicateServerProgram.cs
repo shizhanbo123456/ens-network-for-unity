@@ -5,9 +5,9 @@ using System.Net;
 using System.Threading;
 using UnityEngine;
 
-public class EnsProgram:MonoBehaviour
+public class DedicateServerProgram:MonoBehaviour
 {
-    public static EnsProgram Instance;
+    public static DedicateServerProgram Instance;
     public EnsDedicatedServer server;
 
     public float DisconnectThreshold = 3f;
@@ -34,7 +34,8 @@ public class EnsProgram:MonoBehaviour
         EnsInstance.DisconnectThreshold = DisconnectThreshold;
         EnsInstance.HeartbeatMsgInterval = HeartbeatMsgInterval;
 
-        Utils.Time.Init();
+        EnsEventRegister.InitServer();
+        EnsEventRegister.InitCommon();
 
         ProtocolWrapper.Protocol.type = ProtocolType;
 

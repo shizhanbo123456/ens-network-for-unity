@@ -345,7 +345,7 @@ public class EnsEventRegister
                 var s=Format.SplitWithBoundaries(data.Substring(3, data.Length - 3),'#');
                 string reply=EnsServerRequest.OnRecvRequest(s[0], s[1], conn);
                 if (reply == string.Empty) return;
-                conn.SendData(data[0] + "Q]{" + s[0] + "}#{" + s[1]+"}");
+                conn.SendData(data[0] + "Q]{" + s[0] + "}#{" + reply+"}");
             }
         };
     }
@@ -402,6 +402,18 @@ public class EnsEventRegister
     }
 
 
+    public static void InitCommon()
+    {
+        Utils.Time.Init();
+    }
+    public static void InitClient()
+    {
+
+    }
+    public static void InitServer()
+    {
+
+    }
     public static void LoopCommon()
     {
         Utils.Time.Update();
