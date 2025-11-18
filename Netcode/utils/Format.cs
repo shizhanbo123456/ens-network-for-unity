@@ -4,11 +4,11 @@ using System.Text;
 
 public static class Format
 {
-    private const char BoundaryStart = '{';
-    private const char BoundaryEnd = '}';
-    private const char ListSeparator = '/';
-    private const char DictionaryPair = ':';
-    private const char DictionarySeparator = ',';
+    public const char BoundaryStart = '{';
+    public const char BoundaryEnd = '}';
+    public const char ListSeparator = '/';
+    public const char DictionaryPair = ':';
+    public const char DictionarySeparator = ',';
 
     public static string DictionaryToString<Tkey,Tvalue>(Dictionary<Tkey,Tvalue>dict,
         char pair=DictionaryPair,char separator=DictionarySeparator,bool addboundary=true,
@@ -18,23 +18,24 @@ public static class Format
         if (keyconverter == null) keyconverter = t => t.ToString();
         if(valueconverter == null) valueconverter = t => t.ToString();
 
-        bool first = true;
         if (addboundary)
         {
+            bool add = false;
             foreach (var i in dict)
             {
-                if (first) first = false;
-                else sb.Append(pair);
-                sb.Append(BoundaryStart + keyconverter.Invoke(i.Key) + BoundaryEnd+pair+BoundaryStart + valueconverter.Invoke(i.Value) +BoundaryEnd);
+                if(add)sb.Append(separator);
+                else add=true;
+                sb.Append(BoundaryStart + keyconverter.Invoke(i.Key) + BoundaryEnd + pair + BoundaryStart + valueconverter.Invoke(i.Value) + BoundaryEnd);
             }
         }
         else
         {
+            bool add = false;
             foreach (var i in dict)
             {
-                if (first) first = false;
-                else sb.Append(pair);
-                sb.Append(i.Key.ToString() + separator + i.Value.ToString());
+                if (add) sb.Append(separator);
+                else add = true;
+                sb.Append(i.Key.ToString() + pair + i.Value.ToString());
             }
         }
         return sb.ToString();
@@ -42,22 +43,11 @@ public static class Format
     public static Dictionary<Tkey, Tvalue> StringToDictionary<Tkey, Tvalue>(string data, Func<string, Tkey> keyconverter, Func<string, Tvalue> valueconverter, char pair = DictionaryPair, char separator = DictionarySeparator, bool removeboudary = true)
     {
         Dictionary<Tkey, Tvalue> r = new Dictionary<Tkey, Tvalue>();
-        var s = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-        if (removeboudary)
+        var s = SplitWithBoundaries(data,separator:separator,removeBoundary:false);
+        foreach (var i in s)
         {
-            foreach (var i in s)
-            {
-                var list = SplitWithBoundaries(i, pair);
-                r.Add(keyconverter.Invoke(list[0]), valueconverter.Invoke(list[1]));
-            }
-        }
-        else
-        {
-            foreach (var i in s)
-            {
-                var list = i.Split(pair);
-                r.Add(keyconverter.Invoke(list[0]), valueconverter.Invoke(list[1]));
-            }
+            var list = SplitWithBoundaries(i, pair,removeBoundary:removeboudary);
+            r.Add(keyconverter.Invoke(list[0]), valueconverter.Invoke(list[1]));
         }
         return r;
     }
@@ -65,13 +55,12 @@ public static class Format
     public static string ListToString<T>(IEnumerable<T> list, char c = ListSeparator)
     {
         StringBuilder sb= new StringBuilder();
-        bool isfirst = true;
         foreach(var i in list)
         {
-            if(isfirst)isfirst= false;
-            else sb.Append(ListSeparator);
+            sb.Append(c);
             sb.Append(i.ToString());
         }
+        sb.Append(c);
         return sb.ToString();
     }
     public static List<T> StringToList<T>(string a,Func<string,T>converter, char c = ListSeparator)
@@ -83,7 +72,7 @@ public static class Format
     }
 
 
-    public static List<string> SplitWithBoundaries(string s, char separator = ListSeparator, char boundaryStart = BoundaryStart, char boundaryEnd = BoundaryEnd)
+    public static List<string> SplitWithBoundaries(string s, char separator, char boundaryStart = BoundaryStart, char boundaryEnd = BoundaryEnd,bool removeBoundary=true)
     {
         List<string> result = new List<string>();
         int currentStart = 0;
@@ -105,15 +94,20 @@ public static class Format
                 {
                     boundaryDepth--;
                 }
-                // 忽略不匹配的边界结束符
             }
             // 当遇到分隔符且不在边界内时进行分割
             else if (c == separator && boundaryDepth == 0)
             {
                 // 提取当前片段并处理边界
-                string segment = s.Substring(currentStart, i - currentStart);
-                string processedSegment = ProcessBoundaries(segment, boundaryStart, boundaryEnd);
-                result.Add(processedSegment);
+                if (i > currentStart)
+                {
+                    string segment = s.Substring(currentStart, i - currentStart);
+                    if(removeBoundary)
+                        segment = (segment.Length >= 2 && segment[0] == boundaryStart && 
+                        segment[segment.Length - 1] == boundaryEnd) ? 
+                        segment.Substring(1, segment.Length - 2) : segment;
+                    result.Add(segment);
+                }
 
                 currentStart = i + 1; // 移动到下一个片段的起始位置
             }
@@ -123,21 +117,13 @@ public static class Format
         if (currentStart <= s.Length - 1)
         {
             string lastSegment = s.Substring(currentStart);
-            string processedLastSegment = ProcessBoundaries(lastSegment, boundaryStart, boundaryEnd);
-            result.Add(processedLastSegment);
+            if(removeBoundary)
+                lastSegment = (lastSegment.Length >= 2 && lastSegment[0] == boundaryStart &&
+                lastSegment[lastSegment.Length - 1] == boundaryEnd) ?
+                lastSegment.Substring(1, lastSegment.Length - 2) : lastSegment;
+            result.Add(lastSegment);
         }
 
         return result;
-    }
-    // 处理片段中的边界符，移除最外层的边界
-    private static string ProcessBoundaries(string segment, char boundaryStart, char boundaryEnd)
-    {
-        // 检查是否同时包含完整的边界符
-        if (segment.Length >= 2 && segment[0] == boundaryStart && segment[segment.Length - 1] == boundaryEnd)
-        {
-            // 移除最外层的边界符
-            return segment.Substring(1, segment.Length - 2);
-        }
-        return segment;
     }
 }

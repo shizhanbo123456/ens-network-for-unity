@@ -83,6 +83,7 @@ public static class EnsNetworkObjectManager
             return;
         }
         int objectId = behaviour.ObjectId;
+        if (objectId == 0) Debug.Log(behaviour.name);
         if (objectMap.ContainsKey(objectId))
         {
             Debug.LogWarning($"id为{objectId}的物体已经被添加");
@@ -113,6 +114,7 @@ public static class EnsNetworkObjectManager
     {
         if (objectMap.TryGetValue(id, out var data))
             return data;
+        Debug.Log("未找到id为" + id + "的物体");
         return null;
     }
     internal static void RemoveObject(int id)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -97,14 +98,14 @@ namespace ProtocolWrapper.Protocols.Udp
         {
             Listening = false;
             Cancelled = true;
-            foreach (var c in Connections)c.Value.ShutDown();
+            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].ShutDown();
         }
 
 
         protected override void ReleaseManagedMenory()
         {
             client.Dispose();
-            foreach (var c in Connections) c.Value.Dispose();
+            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].Dispose();
             Connections.Clear();
         }
         protected override void ReleaseUnmanagedMenory()

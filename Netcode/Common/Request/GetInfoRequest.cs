@@ -47,7 +47,7 @@ namespace Ens.Request
                 Dictionary<int, string> r = new Dictionary<int, string>();
                 foreach (var i in ids)
                 {
-                    if (EnsRoomManager.Instance.rooms.TryGetValue(int.Parse(data), out var room))
+                    if (EnsRoomManager.Instance.rooms.TryGetValue(i, out var room))
                     {
                         r.Add(i, Format.DictionaryToString(room.Info));
                     }

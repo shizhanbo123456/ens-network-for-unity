@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -90,12 +91,12 @@ namespace ProtocolWrapper.Protocols.Tcp
         {
             Listening = false;
             Cancelled = true;
-            foreach (var c in Connections.Values) c.ShutDown();
+            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].ShutDown();
         }
 
         protected override void ReleaseManagedMenory()
         {
-            foreach (var c in Connections.Values) c.Dispose();
+            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].Dispose();
             Connections.Clear();
         }
         protected override void ReleaseUnmanagedMenory()

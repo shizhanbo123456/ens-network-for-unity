@@ -371,6 +371,7 @@ public class EnsEventRegister
         EnsInstance.OnServerConnect += () =>
         {
             EnsInstance.ServerDisconnectInvoke = false;
+            EnsInstance.ClientConnectRejected = false;
         };
         EnsInstance.OnServerDisconnect += () =>
         {

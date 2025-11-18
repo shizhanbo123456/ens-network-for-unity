@@ -68,7 +68,7 @@ public class EnsConnection:SR
         OnShutDown?.Invoke(this);
         Connection.SendData(Header.D);
         Connection.RefreshSendBuffer();
-
+        Debug.Log("∑¢ÀÕ¡Àæ‹æ¯«Î«Û");
         KeyLibrary.Clear();
         Connection.ShutDown();
 

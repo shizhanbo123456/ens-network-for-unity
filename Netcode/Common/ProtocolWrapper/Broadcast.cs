@@ -13,7 +13,6 @@ namespace ProtocolWrapper
         public string Content;
         public float ReceiveTime;
     }
-
     public static class Broadcast
     {
         public static int Port = 9900;
@@ -56,13 +55,15 @@ namespace ProtocolWrapper
         {
             if (!reachTime.Reached) return;
             reachTime.ReachAfter(broadcastInterval);
+            if (BroadcastContent.Count == 0) return;
 
-            var s=','+global::Format.DictionaryToString(BroadcastContent)+',';
+            var s=global::Format.DictionarySeparator+global::Format.DictionaryToString(BroadcastContent)+global::Format.DictionarySeparator;
 
             try
             {
                 byte[] data = Format.GetBytes(s);
                 senderClient.Send(data, data.Length, broadcastEndPoint);
+                Debug.Log(s);
             }
             catch
             {
@@ -83,15 +84,8 @@ namespace ProtocolWrapper
 
         public static void AddInfo(string header, string content)
         {
-            if (Protocol.DevelopmentDebug)
-            {
-                if (header.Contains(':') || header.Contains(',')) Debug.LogError("消息头不合规");
-                if (content.Contains(':') || content.Contains(',')) Debug.LogError("消息体不合规");
-            }
-            if (BroadcastContent.ContainsKey(header))
-                BroadcastContent[header] = content;
-            else
-                BroadcastContent.Add(header, content);
+            if (BroadcastContent.ContainsKey(header))BroadcastContent[header] = content;
+            else BroadcastContent.Add(header, content);
         }
         public static void RemoveInfo(string header)
         {
@@ -112,12 +106,14 @@ namespace ProtocolWrapper
             }
             try
             {
-                receiverClient = new UdpClient(Port);
+                receiverClient = new UdpClient();
                 receiverClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                receiverClient.Client.Bind(new IPEndPoint(IPAddress.Any, Port));
                 return true;
             }
-            catch
+            catch(Exception e)
             {
+                Debug.LogError(e.ToString());
                 return false;
             }
         }
@@ -131,12 +127,12 @@ namespace ProtocolWrapper
                     byte[] receivedData = receiverClient.Receive(ref remoteEndPoint);
                     string message = Format.GetString(receivedData);
 
-                    int msgstart = message.IndexOf(',');
-                    int msgend = message.LastIndexOf(',');
+                    int msgstart = message.IndexOf(global::Format.DictionarySeparator);
+                    int msgend = message.LastIndexOf(global::Format.DictionarySeparator);
                     if (msgstart == -1 || msgend == -1 || msgend <= msgstart) continue;
 
                     string msg = message.Substring(msgstart, msgend - msgstart + 1);
-                    var s=msg.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var s = global::Format.SplitWithBoundaries(msg, global::Format.DictionarySeparator,removeBoundary:false);
                     foreach (var part in s)
                     {
                         HandleReceivedMesg(part);
@@ -161,7 +157,7 @@ namespace ProtocolWrapper
 
         private static void HandleReceivedMesg(string mesg)
         {
-            var keyValue = global::Format.SplitWithBoundaries(mesg,':');
+            var keyValue = global::Format.SplitWithBoundaries(mesg,global::Format.DictionaryPair);
             if (keyValue.Count != 2) return;
 
             string header = keyValue[0];

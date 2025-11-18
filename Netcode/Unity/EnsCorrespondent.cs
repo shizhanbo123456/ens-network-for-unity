@@ -79,7 +79,7 @@ public class EnsCorrespondent :MonoBehaviour
         }
         if (networkMode == NetworkMode.Host || networkMode == NetworkMode.Client)
         {
-            if (Client != null)
+            if (Client != null&&Client.Initilized())
             {
                 Client.Update();
             }

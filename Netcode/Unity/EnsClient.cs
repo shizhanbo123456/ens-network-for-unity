@@ -16,6 +16,10 @@ internal class EnsClient:SR
         if(Client == null)return false;
         return Client.On;
     }
+    internal virtual bool Initilized()
+    {
+        return Client.Initialized;
+    }
 
     protected EnsClient(){ }
     internal EnsClient(string ip,int port)
@@ -31,10 +35,6 @@ internal class EnsClient:SR
             KeyLibrary.Add(data);
         }
         else Client.SendData(data);
-    }
-    internal bool Initilized()
-    {
-        return Client.Initialized;
     }
     internal override void Update()
     {

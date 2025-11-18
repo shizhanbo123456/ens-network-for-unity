@@ -12,6 +12,10 @@ internal class ENCLocalClient : EnsClient
     {
         return _on;
     }
+    internal override bool Initilized()
+    {
+        return true;
+    }
     public ENCLocalClient() : base()//基类无参数的构造方法没有执行任何步骤
     {
         if (EnsInstance.DevelopmentDebug) Debug.Log("[E]本地客户端(ENCLocalClient)已启动");
