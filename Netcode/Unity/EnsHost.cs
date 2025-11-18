@@ -38,7 +38,7 @@ internal class EnsHost : EnsConnection
     }
     internal override void SendData(string data)
     {
-        _client.ReceivedData.Write(data);
+        if(_client!=null)_client.ReceivedData.Write(data);
     }
     internal override void Update()
     {

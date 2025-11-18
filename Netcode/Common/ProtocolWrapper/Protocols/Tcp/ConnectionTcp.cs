@@ -28,7 +28,6 @@ namespace ProtocolWrapper.Protocols.Tcp
         public override void ShutDown()
         {
             base.ShutDown();
-            Server.Connections.Remove(Id);
         }
         protected override void ReleaseUnmanagedMenory()
         {

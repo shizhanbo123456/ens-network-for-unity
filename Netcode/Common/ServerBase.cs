@@ -17,7 +17,9 @@ public class ServerBase : Disposable
     }
     internal void OnConnectionShutDown(EnsConnection conn)
     {
+        if (!On) return;//房间管理器关闭时不会发送退出房间
         if (conn.room != null) conn.room.Exit(conn);
+        ClientConnections.Remove(conn.ClientId);
     }
     public void StartListening()
     {
@@ -52,8 +54,8 @@ public class ServerBase : Disposable
         if (!On) return;
         On = false;
         EndListening();
-        Listener.ShutDown();
         foreach (var i in ClientConnections.Values) i.ShutDown();
+        Listener.ShutDown();
     }
     protected override void ReleaseManagedMenory()
     {

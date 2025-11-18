@@ -13,7 +13,6 @@ namespace ProtocolWrapper.Protocols.Tcp
     /// </summary>
     internal class ListenerTcp : ListenerBase
     {
-        public Dictionary<int, ConnectionTcp> Connections = new Dictionary<int, ConnectionTcp>();
         private TcpListener Listener;
 
         public ListenerTcp(IPAddress ip,int port) : base(ip, port)
@@ -83,7 +82,6 @@ namespace ProtocolWrapper.Protocols.Tcp
             var Connection = new ConnectionTcp();
             Connection.Init(Client, this);
             Protocol.OnRecvConnection?.Invoke(Connection, ++connectionIndex);
-            Connections.Add(Connection.Id, Connection);
             if (Protocol.DevelopmentDebug) Utils.Debug.Log("[W]有新客户端连接");
         }
 
@@ -91,18 +89,10 @@ namespace ProtocolWrapper.Protocols.Tcp
         {
             Listening = false;
             Cancelled = true;
-            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].ShutDown();
-        }
-
-        protected override void ReleaseManagedMenory()
-        {
-            foreach (var c in Connections.Keys.ToList()) if (Connections.ContainsKey(c)) Connections[c].Dispose();
-            Connections.Clear();
         }
         protected override void ReleaseUnmanagedMenory()
         {
             Listener = null;
-            Connections = null;
         }
     }
 }

@@ -1,6 +1,4 @@
 using ProtocolWrapper;
-using System;
-using UnityEngine;
 
 /// <summary>
 /// 实例化时启动客户端
@@ -66,6 +64,10 @@ internal class EnsClient:SR
     }
     internal override void ShutDown()
     {
+        if (Client == null || Client.Cancelled) return;
+        Client.SendData(Header.D);
+        Client.RefreshSendBuffer();
+
         Client.ShutDown();
         KeyLibrary.Clear();
     }

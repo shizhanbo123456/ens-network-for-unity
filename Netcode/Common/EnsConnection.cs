@@ -9,7 +9,7 @@ public class EnsConnection:SR
 {
     internal int ClientId;
     private KeyLibrary KeyLibrary;
-    internal ProtocolBase Connection;
+    private ProtocolBase Connection;
     internal EnsRoom room;
 
     internal Action<EnsConnection> OnShutDown;
@@ -67,7 +67,7 @@ public class EnsConnection:SR
         OnShutDown?.Invoke(this);
         Connection.SendData(Header.D);
         Connection.RefreshSendBuffer();
-        Debug.Log("∑¢ÀÕ¡Àæ‹æ¯«Î«Û");
+
         KeyLibrary.Clear();
         Connection.ShutDown();
 

@@ -10,7 +10,6 @@ using static KeyLibrary;
 public sealed class EnsSpawner : EnsBehaviour
 {
     [Space]
-    //public List<NOMBehaviourCollection> prefabs = new();
     public List<EnsBehaviourCollection> Prefabs = new List<EnsBehaviourCollection>();
     public Vector3 DefaultSpawnPosition = new Vector3(0, -10000, 0);
 

@@ -61,7 +61,11 @@ public class EnsRoomManager:Disposable
 
 
 
-
+    public void ShutDown()
+    {
+        //不需要ShutDown因为ShutDown只是移除了RoomManager对它的引用
+        foreach (var i in rooms.Values) i.Dispose();
+    }
     protected override void ReleaseManagedMenory()
     {
         foreach (var r in rooms.Values) r.Dispose();
