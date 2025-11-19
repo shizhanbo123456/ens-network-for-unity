@@ -8,6 +8,9 @@ EnsBehaviour会占用生命周期的Start函数
 不在将预制体内设置物体id为0并且不使用自动分配
 EnsSpawner中，分配id在Awake之后，Start之前
 
-销毁时可以直接Destroy物体
+销毁时可以直接Destroy物体（但不建议）
 需要同步销毁则调用DestroyRpc
 本地单独销毁调用DestroyLocal，可以防止重复销毁
+
+
+发送请求时如果传入的参数为List/Dictionary，请确保它不是空的，否则会导致超时

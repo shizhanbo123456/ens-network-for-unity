@@ -20,6 +20,11 @@ namespace Ens.Request
             }
             public static void SendRequest(Dictionary<string,(char,int)>info)//提供静态方法用于调用
             {
+                if (info.Count == 0)
+                {
+                    Utils.Debug.LogError("设置了空的规则");
+                    return;
+                }
                 string s = Format.DictionaryToString(info, valueconverter: t => t.Item1.ToString() + t.Item2);
                 Instance.SendRequest(s);
             }

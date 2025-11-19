@@ -20,6 +20,11 @@ namespace Ens.Request
             }
             public static void SendRequest(Dictionary<string,string> pairs)//提供静态方法用于调用
             {
+                if (pairs.Count == 0)
+                {
+                    Utils.Debug.LogError("设置了空的信息");
+                    return;
+                }
                 Instance.SendRequest(Format.DictionaryToString(pairs));
             }
             protected override void Error(int code, string data)

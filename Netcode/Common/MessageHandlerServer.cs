@@ -12,7 +12,7 @@ public static class MessageHandlerServer
     }
     public static void Regist(char header, Action<string, EnsConnection> action)
     {
-        if (!Events.ContainsKey(header))
+        if (Events.ContainsKey(header))
         {
             Debug.Log("重复注册消息头：" + header);
             return;

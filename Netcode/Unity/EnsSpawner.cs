@@ -49,6 +49,7 @@ public sealed class EnsSpawner : EnsBehaviour
     }
     private void CallFuncServrRpc(string func, List<int> targets, string param,int id, KeyFormatType type = KeyFormatType.None)
     {
+        if (targets.Count == 0) return;
         if (EnsInstance.Corr.networkMode == EnsCorrespondent.NetworkMode.None)
         {
             if (targets.Contains(EnsInstance.LocalClientId)) 

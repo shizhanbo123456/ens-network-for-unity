@@ -35,7 +35,7 @@ internal class EnsClient:SR
             EnsInstance.Corr.ShutDown();
             return;
         }
-        if (Client.Initialized)
+        if (!Client.Initialized)
         {
             Utils.Debug.LogWarning("客户端初始化中");
             return;

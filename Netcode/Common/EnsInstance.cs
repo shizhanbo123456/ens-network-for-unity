@@ -1,4 +1,6 @@
+#if UNITY_2017_1_OR_NEWER
 using Ens.Request.Client;
+#endif
 using System;
 using System.Collections.Generic;
 

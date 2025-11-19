@@ -20,6 +20,11 @@ namespace Ens.Request
             }
             public static void SendRequest(List<int>ids)//提供静态方法用于调用
             {
+                if (ids.Count == 0)
+                {
+                    Utils.Debug.LogError("请求目标为空");
+                    return;
+                }
                 Instance.SendRequest(Format.ListToString(ids));
             }
             protected override void Error(int code, string data)

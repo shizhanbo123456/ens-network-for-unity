@@ -106,6 +106,7 @@ public abstract class EnsBehaviour : MonoBehaviour
     }
     public void CallFuncRpc(string func,List<int> targets, KeyFormatType type = KeyFormatType.None)
     {
+        if (targets.Count == 0) return;
         if (EnsInstance.Corr.networkMode == EnsCorrespondent.NetworkMode.None)
         {
             if (targets.Contains(EnsInstance.LocalClientId)) StartCoroutine(func);
@@ -124,6 +125,7 @@ public abstract class EnsBehaviour : MonoBehaviour
     }
     public void CallFuncRpc(string func, List<int> targets,string param, KeyFormatType type = KeyFormatType.None)
     {
+        if (targets.Count == 0) return;
         if (EnsInstance.Corr.networkMode == EnsCorrespondent.NetworkMode.None)
         {
             if (targets.Contains(EnsInstance.LocalClientId)) StartCoroutine(func, param);
@@ -142,6 +144,7 @@ public abstract class EnsBehaviour : MonoBehaviour
     }
     public void CallFuncRpc(string func, List<int> targets, int delay)
     {
+        if (targets.Count == 0) return;
         if (EnsInstance.Corr.networkMode == EnsCorrespondent.NetworkMode.None)
         {
             if (targets.Contains(EnsInstance.LocalClientId)) StartCoroutine(func);
@@ -160,6 +163,7 @@ public abstract class EnsBehaviour : MonoBehaviour
     }
     public void CallFuncRpc(string func, List<int> targets, string param, int delay)
     {
+        if (targets.Count == 0) return;
         if (EnsInstance.Corr.networkMode == EnsCorrespondent.NetworkMode.None)
         {
             if (targets.Contains(EnsInstance.LocalClientId)) StartCoroutine(func, param);
