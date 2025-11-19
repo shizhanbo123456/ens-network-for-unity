@@ -1,4 +1,5 @@
 using System.Net;
+using System.Threading;
 
 public class DedicateServerProgram
 {
@@ -11,14 +12,14 @@ public class DedicateServerProgram
 
     //为空则视为IPAddress.Any
     public string IP;
-    public int port = 12345;
+    public int port = 44433;
 
     public void Start()
     {
         EnsInstance.DisconnectThreshold = DisconnectThreshold;
         EnsInstance.HeartbeatMsgInterval = HeartbeatMsgInterval;
         ProtocolWrapper.Protocol.type = ProtocolType;
-        IPAddress ip = IP == string.Empty ? IPAddress.Any : IPAddress.Parse(IP);
+        IPAddress ip = string.IsNullOrEmpty(IP) ? IPAddress.Any : IPAddress.Parse(IP);
         EnsRoomManager.PrintRoomData = PrintRoomData;
 
         EnsServerEventRegister.RegistDedicateServer();
@@ -35,5 +36,7 @@ public class DedicateServerProgram
         global::Loop.LoopServer();
 
         server.Update();
+
+        Thread.Sleep(1);
     }
 }

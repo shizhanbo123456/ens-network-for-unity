@@ -9,15 +9,7 @@ internal class EnsClient:SR
 
     private ProtocolBase Client;
 
-    internal override bool On()
-    {
-        if(Client == null)return false;
-        return Client.On;
-    }
-    internal virtual bool Initilized()
-    {
-        return Client.Initialized;
-    }
+    protected bool _on;
 
     protected EnsClient(){ }
     internal EnsClient(string ip,int port)
@@ -25,6 +17,8 @@ internal class EnsClient:SR
         KeyLibrary = new KeyLibrary();
 
         Client = Protocol.GetClient(ip,port);
+
+        _on= true;
     }
     internal override void SendData(string data)
     {
@@ -41,12 +35,17 @@ internal class EnsClient:SR
             EnsInstance.Corr.ShutDown();
             return;
         }
+        if (Client.Initialized)
+        {
+            Utils.Debug.LogWarning("客户端初始化中");
+            return;
+        }
         var d = KeyLibrary.Update();
         foreach (var s in d) Client.SendData(s);
         Client.RefreshSendBuffer();
         var q = Client.RefreshRecvBuffer();
         if (q == null) return;
-        while(q.Read(out var data))
+        while(q.Read(out var data)&&_on)
         {
             try
             {
@@ -55,7 +54,7 @@ internal class EnsClient:SR
                     KeyLibrary.OnRecvData(data, out var skip, out data);
                     if (skip) continue;
                 }
-                EnsInstance.ClientRecvData?.Invoke(data);
+                MessageHandlerClient.Invoke(data);
             }
             catch
             {
@@ -68,13 +67,14 @@ internal class EnsClient:SR
         Client.SendData(Header.D);
         Client.RefreshSendBuffer();
 
+        _on = false;
         Client.ShutDown();
         KeyLibrary.Clear();
     }
 
     protected override void ReleaseManagedMenory()
     {
-        Client.Dispose();
+        Client?.Dispose();
         base.ReleaseManagedMenory();
     }
     protected override void ReleaseUnmanagedMenory()

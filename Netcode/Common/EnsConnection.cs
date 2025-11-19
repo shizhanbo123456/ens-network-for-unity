@@ -15,12 +15,7 @@ public class EnsConnection:SR
 
     internal int delay = 20;//20ms
 
-
-    internal override bool On()
-    {
-        if (Connection == null) return false;
-        return Connection.On;
-    }
+    protected bool _on;
 
     protected EnsConnection() { }
     internal EnsConnection(ProtocolBase _base,int index)
@@ -29,6 +24,7 @@ public class EnsConnection:SR
 
         Connection = _base;
         ClientId = index;
+        _on= true;
 
         SendData(Header.kC + ClientId);
     }
@@ -44,7 +40,7 @@ public class EnsConnection:SR
         Connection.RefreshSendBuffer();
         var q=Connection.RefreshRecvBuffer();
         if (q == null) return;
-        while (q.Read(out var data))
+        while (q.Read(out var data)&&_on)
         {
             try
             {
@@ -53,7 +49,7 @@ public class EnsConnection:SR
                     KeyLibrary.OnRecvData(data, out var skip, out data);
                     if (skip) continue;
                 }
-                EnsInstance.ServerRecvData?.Invoke(data, this);
+                MessageHandlerServer.Invoke(data, this);
             }
             catch
             {
@@ -67,6 +63,7 @@ public class EnsConnection:SR
         Connection.SendData(Header.D);
         Connection.RefreshSendBuffer();
 
+        _on = false;
         KeyLibrary.Clear();
         Connection.ShutDown();
 

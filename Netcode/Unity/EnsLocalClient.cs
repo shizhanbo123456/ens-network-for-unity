@@ -7,17 +7,9 @@ using UnityEngine;
 internal class ENCLocalClient : EnsClient
 {
     internal CircularQueue<string> ReceivedData = new CircularQueue<string>();
-    private bool _on = true;
-    internal override bool On()
+    public ENCLocalClient()
     {
-        return _on;
-    }
-    internal override bool Initilized()
-    {
-        return true;
-    }
-    public ENCLocalClient() : base()//基类无参数的构造方法没有执行任何步骤
-    {
+        _on = true;
     }
     internal override void SendData(string data)
     {
@@ -25,11 +17,11 @@ internal class ENCLocalClient : EnsClient
     }
     internal override void Update()
     {
-        while (ReceivedData.Read(out var data))
+        while (ReceivedData.Read(out var data)&&_on)
         {
             try
             {
-                EnsInstance.ClientRecvData?.Invoke(data);
+                MessageHandlerClient.Invoke(data);
             }
             catch (System.Exception ex)
             {
@@ -39,7 +31,15 @@ internal class ENCLocalClient : EnsClient
     }
     internal override void ShutDown()
     {
-        ReceivedData = null;
         _on = false;
+        ReceivedData = null;
+    }
+    protected override void ReleaseManagedMenory()
+    {
+        
+    }
+    protected override void ReleaseUnmanagedMenory()
+    {
+        ReceivedData = null;
     }
 }

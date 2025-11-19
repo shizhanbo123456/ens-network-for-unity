@@ -10,11 +10,7 @@ internal class EnsHost : EnsConnection
 {
     internal CircularQueue<string> ReceivedData = new CircularQueue<string>();
     private ENCLocalClient _client;
-    private bool _on;
-    internal override bool On()
-    {
-        return _on;
-    }
+
     internal static void Create(out EnsHost host,out ENCLocalClient client)
     {
         if (EnsInstance.Corr.Client != null)
@@ -42,11 +38,11 @@ internal class EnsHost : EnsConnection
     }
     internal override void Update()
     {
-        while(ReceivedData.Read(out var s))
+        while(ReceivedData.Read(out var s)&&_on)
         {
             try
             {
-                EnsInstance.ServerRecvData?.Invoke(s, this);
+                MessageHandlerServer.Invoke(s, this);
             }
             catch(System.Exception e)
             {

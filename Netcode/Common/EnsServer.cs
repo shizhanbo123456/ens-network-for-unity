@@ -1,5 +1,6 @@
 ﻿using ProtocolWrapper;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 public class EnsServer : Disposable
@@ -7,6 +8,7 @@ public class EnsServer : Disposable
     internal static EnsServer Instance;
 
     internal Dictionary<int, EnsConnection> ClientConnections = new Dictionary<int, EnsConnection>();
+    private List<int>ClientIds = new List<int>();
     internal EnsRoomManager RoomManager;
     internal ListenerBase Listener;
 
@@ -44,22 +46,32 @@ public class EnsServer : Disposable
     }
     public virtual void Update()
     {
-        for (int index = ClientConnections.Count - 1; index >= 0; index--)
+        if (ClientIds.Count != ClientConnections.Count) ClientIds = ClientConnections.Keys.ToList();
+        int id;
+        for (int index = ClientIds.Count - 1; index >= 0; index--)
         {
-            var i = ClientConnections[index];
-            if (i.hbRecvTime.Reached)
+            id = ClientIds[index];
+            if (ClientConnections.TryGetValue(id, out var i))
             {
-                i.ShutDown();
-                i.Dispose();
-                ClientConnections.Remove(i.ClientId);
-                continue;
+                if (i.hbRecvTime.Reached)
+                {
+                    i.ShutDown();
+                    i.Dispose();
+                    ClientConnections.Remove(ClientIds[index]);
+                    ClientIds.Remove(ClientIds[index]);
+                    continue;
+                }
+                if (i.hbSendTime.Reached)
+                {
+                    i.SendData(Header.H + ((int)(Utils.Time.time * 1000)).ToString());
+                    i.hbSendTime.ReachAfter(EnsInstance.HeartbeatMsgInterval);
+                }
+                i.Update();
             }
-            if (i.hbSendTime.Reached)
+            else
             {
-                i.SendData(Header.H + ((int)(Utils.Time.time * 1000)).ToString());
-                i.hbSendTime.ReachAfter(EnsInstance.HeartbeatMsgInterval);
+                ClientIds.RemoveAt(index);
             }
-            i.Update();
         }
     }
     public virtual void ShutDown()

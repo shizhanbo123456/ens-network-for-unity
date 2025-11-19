@@ -35,124 +35,103 @@ public class EnsClientEventRegister
     }
     protected static void Client_Any()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.RegistAny((data) =>
         {
             if (data.Length > 2)
             {
                 EnsInstance.Corr.Client.hbRecvTime.ReachAfter(EnsInstance.DisconnectThreshold);
             }
-        };
+        });
     }
     protected static void Client_C()
     {
         //成功连接
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('C',(data) =>
         {
-            if (data[1] == 'C')
-            {
-                var i = int.Parse(data.Substring(3, data.Length - 3));
-                EnsInstance.LocalClientId = i;
-                EnsInstance.OnServerConnect.Invoke();
-            }
-        };
+            var i = int.Parse(data.Substring(3, data.Length - 3));
+            EnsInstance.LocalClientId = i;
+            EnsInstance.OnServerConnect.Invoke();
+        });
     }
     protected static void Client_E()
     {
         //事件
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('E', (data) =>
         {
-            if (data[1] == 'E')
-            {
-                string[] s = data.Substring(3, data.Length - 3).Split('#');
-                int e = int.Parse(s[0]);
-                int i = int.Parse(s[1]);
-                if (e == 1) EnsInstance.OnClientEnter?.Invoke(i);
-                else if (e == 2) EnsInstance.OnClientExit?.Invoke(i);
-                else Debug.LogError("[E]存在错误的事件消息 " + data);
-            }
-        };
+            string[] s = data.Substring(3, data.Length - 3).Split('#');
+            int e = int.Parse(s[0]);
+            int i = int.Parse(s[1]);
+            if (e == 1) EnsInstance.OnClientEnter?.Invoke(i);
+            else if (e == 2) EnsInstance.OnClientExit?.Invoke(i);
+            else Debug.LogError("[E]存在错误的事件消息 " + data);
+        });
     }
     protected static void Client_H()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('H',(data) =>
         {
-            if (data[1] == 'H')
-            {
-                EnsInstance.Corr.Client?.SendData(data);
-            }
-        };
+            EnsInstance.Corr.Client?.SendData(data);
+        });
     }
     protected static void Client_D()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('D',(data) =>
         {
-            if (data[1] == 'D')
-            {
-                EnsInstance.Corr.ShutDown();
-            }
-        };
+            EnsInstance.Corr.ShutDown();
+        });
     }
     protected static void Client_A()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('A',(data) =>
         {
-            if (data[1] == 'A')
-            {
-                int d = int.Parse(data.Substring(3, data.Length - 3));
-                EnsInstance.HasAuthority = d == 1;
-                EnsInstance.OnAuthorityChanged?.Invoke();
-            }
-        };
+            int d = int.Parse(data.Substring(3, data.Length - 3));
+            EnsInstance.HasAuthority = d == 1;
+            EnsInstance.OnAuthorityChanged?.Invoke();
+        });
     }
     protected static void Client_F()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('F',(data) =>
         {
-            if (data[1] == 'F')
+            var s = Format.SplitWithBoundaries(data.Substring(3, data.Length - 3), '#');
+            int id = int.Parse(s[0]);
+            string func = s[1];
+            EnsBehaviour obj = EnsNetworkObjectManager.GetObject(id);
+            if (obj == null)
             {
-                var s = Format.SplitWithBoundaries(data.Substring(3, data.Length - 3), '#');
-                int id = int.Parse(s[0]);
-                string func = s[1];
-                EnsBehaviour obj = EnsNetworkObjectManager.GetObject(id);
-                if (obj == null)
-                {
-                    if (EnsInstance.DevelopmentDebug) Debug.LogError("未找到id为" + id + "的物体");
-                    return;
-                }
-                if (s.Count >= 4)
-                {
-                    string param = s[3];
-                    obj.CallFuncLocal(func, param);
-                }
-                else
-                {
-                    obj.CallFuncLocal(func);
-                }
+                if (EnsInstance.DevelopmentDebug) Debug.LogError("未找到id为" + id + "的物体");
+                return;
             }
-        };
+            if (s.Count >= 4)
+            {
+                string param = s[3];
+                obj.CallFuncLocal(func, param);
+            }
+            else
+            {
+                obj.CallFuncLocal(func);
+            }
+        });
     }
     protected static void Client_S()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('S',(data) =>
         {
-            if (data[1] == 'S')
+            var s = Format.SplitWithBoundaries(data.Substring(3, data.Length - 3), '#');
+            int id = int.Parse(s[0]);
+            string func = s[1];
+            EnsBehaviour obj = EnsNetworkObjectManager.GetObject(id);
+            if (obj == null)
             {
-                var s = Format.SplitWithBoundaries(data.Substring(3, data.Length - 3), '#');
-                int id = int.Parse(s[0]);
-                string func = s[1];
-                EnsBehaviour obj = EnsNetworkObjectManager.GetObject(id);
-                if (obj == null)
-                {
-                    if (EnsInstance.DevelopmentDebug) Debug.LogWarning("[N]无物体id=" + id);
-                    return;
-                }
-                obj.DelayInvoke(s);
+                if (EnsInstance.DevelopmentDebug) Debug.LogWarning("[N]无物体id=" + id);
+                return;
             }
-        };
+            obj.DelayInvoke(s);
+        });
     }
     protected static void Client_f()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('f',(data) =>
         {
             if (data[1] == 'f')
             {
@@ -164,18 +143,18 @@ public class EnsClientEventRegister
                 string param = s[3];
                 obj.Create(param, idStart);
             }
-        };
+        });
     }
     protected static void Client_Q()
     {
-        EnsInstance.ClientRecvData += (data) =>
+        MessageHandlerClient.Regist('Q',(data) =>
         {
             if (data[1] == 'Q')
             {
                 var s = Format.SplitWithBoundaries(data.Substring(3, data.Length - 3), '#');
                 EnsClientRequest.RecvReply(s[0], s[1]);
             }
-        };
+        });
     }
 
     protected static void ForceInvokeOnce_Server()

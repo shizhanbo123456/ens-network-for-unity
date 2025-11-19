@@ -22,6 +22,7 @@ public class EnsInstance
     public static float KeySendInterval = 0.05f;//未确认的关键信息发送间隔
     public static float RKeyExistTime = 5f;//对方对关键信息的忽略时长
 
+#if UNITY_2017_1_OR_NEWER
     public static Action OnConnectionRejected;
     public static Action OnServerConnect;
     public static Action OnServerDisconnect;
@@ -85,8 +86,5 @@ public class EnsInstance
     internal static bool RoomExitInvoke = true;
     internal static bool ServerDisconnectInvoke = true;
     internal static bool ClientConnectRejected = false;
-
-
-    internal static Action<string, EnsConnection> ServerRecvData;
-    internal static Action<string> ClientRecvData;
+#endif
 }

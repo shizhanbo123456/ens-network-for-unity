@@ -86,11 +86,7 @@ public class EnsCorrespondent :MonoBehaviour
         }
         if (networkMode == NetworkMode.Host || networkMode == NetworkMode.Client)
         {
-            if (Client != null&&Client.Initilized())
-            {
-                Client.Update();
-            }
-            else Debug.LogWarning("[E]客户端初始化中");
+            Client.Update();
         }
     }
     private void Update()

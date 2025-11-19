@@ -26,7 +26,7 @@ public class KeyLibrary//处理的是未经NetcodeTool格式处理的信息，�
         {
             case ENCKey.KeyState.TobeConfirmed:
                 {
-                    if (!k.ConfirmedExistingCancel.Valid)
+                    if (k.ConfirmedExistingSource.Reached)
                     {
                         k.State = ENCKey.KeyState.End;
                     }
@@ -44,7 +44,7 @@ public class KeyLibrary//处理的是未经NetcodeTool格式处理的信息，�
                 }
             case ENCKey.KeyState.ConfirmedExisting:
                 {
-                    if (!k.ConfirmedExistingCancel.Valid) k.State = ENCKey.KeyState.End;
+                    if (k.ConfirmedExistingSource.Reached) k.State = ENCKey.KeyState.End;
                     break;
                 }
         }
@@ -159,7 +159,7 @@ public class KeyLibrary//处理的是未经NetcodeTool格式处理的信息，�
 
         for (int i = RecvKeys.Count - 1; i >= 0; i--)
         {
-            if (!RecvKeys[i].cancel.Valid) RecvKeys.RemoveAt(i);
+            if (RecvKeys[i].cancel.Reached) RecvKeys.RemoveAt(i);
         }
         List<string> r = new List<string>();
         foreach (var k in Keys) UpdateEvent(k, r);
@@ -195,14 +195,13 @@ public class ENCKey
     }
     public KeyState State = KeyState.TobeConfirmed;
     public ReachTime ToConfirmIntervalLeft;
-    public CustomCancel ConfirmedExistingCancel;
+    public ReachTime ConfirmedExistingSource;
 
     public ENCKey(string data, KeyLibrary.KeyFormatType type)
     {
         ToConfirmIntervalLeft = new ReachTime();
         ToConfirmIntervalLeft.ReachAt(-1f);
-        ConfirmedExistingCancel = new CustomCancel();
-        ConfirmedExistingCancel.CancelAfter(EnsInstance.KeyExistTime);
+        ConfirmedExistingSource = new ReachTime(EnsInstance.KeyExistTime, ReachTime.InitTimeFlagType.ReachAfter);
         Key = data;
         Index = Random.Next(IndexRange, IndexRange * 10 - 1);
         Type = type;
@@ -212,12 +211,11 @@ public class ENCRKey//仅用于记录收到的信息
 {
     public string Key;
     public int Index;
-    public CustomCancel cancel;
+    public ReachTime cancel;
     public ENCRKey(string data, int index)
     {
         Key = data;
         Index = index;
-        cancel= new CustomCancel();
-        cancel.CancelAfter(EnsInstance.RKeyExistTime);
+        cancel= new ReachTime(EnsInstance.RKeyExistTime,ReachTime.InitTimeFlagType.ReachAfter);
     }
 }
