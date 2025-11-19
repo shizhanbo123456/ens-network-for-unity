@@ -37,7 +37,7 @@ namespace ProtocolWrapper
         }
         public static string[] Split(string origin)
         {
-            return origin.Split(DataSeparator, StringSplitOptions.RemoveEmptyEntries);
+            return origin.Split(new char[]{DataSeparator}, StringSplitOptions.RemoveEmptyEntries);
         }
 
 
