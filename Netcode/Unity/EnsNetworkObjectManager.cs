@@ -84,7 +84,7 @@ public static class EnsNetworkObjectManager
                 }
                 if (group[id].nomEnabled)
                 {
-                    group[id].ManagedUpdate();
+                    group[id].FixedManagedUpdate();
                 }
             }
             if (m_toRemove.Count > 0)
